@@ -6,33 +6,7 @@ from flask.ext.wtf import CSRFProtect
 from redis import StrictRedis
 # 可以用来指定 session 保存的位置
 from flask_session import Session
-
-
-class Config(object):
-    """项目的配置"""
-    DEBUG = True
-
-    SECRET_KEY = "hu112LK9YAvRZMO++1XCsl2oZ05DFCROrbByeugLeNbvX1Fw1jZwaB6YCwdWW3jR"
-
-    """为MySQL数据库添加配置"""
-    SQLALCHEMY_DATABASE_URI = "mysql://root:mysql@127.0.0.1:3306/information27"
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-    # Redis的配置
-    REDIS_HOST = "127.0.0.1"
-    REDIS_PORT = 6379
-
-    # Session的配置
-    SESSION_TYPE = "redis"
-    # 设置需要签名
-    SESSION_USE_SIGNER = True
-    # 指定SESSION保存的redis
-    SESSION_REDIS = StrictRedis(host=REDIS_HOST, port=REDIS_PORT)
-    # 设置需要过期
-    SESSION_PERMANENT = False
-    # 设置过期时间
-    PERMANENT_SESSION_LIFETIME = 86400 * 2
-
+from config import Config
 
 app = Flask(__name__)
 # 加载配置
@@ -56,7 +30,7 @@ manager.add_command('db', MigrateCommand)
 @app.route('/')
 def index():
     session["name"] = "itheima"
-    return 'Hello Index!'
+    return 'Hello Index233!'
 
 
 if __name__ == '__main__':
