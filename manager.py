@@ -1,3 +1,5 @@
+from flask import current_app
+import logging
 from flask import session
 from flask.ext.migrate import Migrate, MigrateCommand
 from flask.ext.script import Manager
@@ -17,6 +19,13 @@ manager.add_command('db', MigrateCommand)
 @app.route('/')
 def index():
     session["name"] = "itheima"
+
+    logging.debug('测试debug')
+    logging.warning('测试warning')
+    logging.error('测试error')
+    logging.fatal('测试fatal')
+
+    # current_app.logger.error("测试error")
     return 'Hello Index222!'
 
 
