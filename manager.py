@@ -1,4 +1,6 @@
 from flask import Flask, session
+from flask.ext.migrate import Migrate, MigrateCommand
+from flask.ext.script import Manager
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.wtf import CSRFProtect
 from redis import StrictRedis
@@ -44,6 +46,12 @@ CSRFProtect(app)
 # 设置session保存位置
 Session(app)
 
+manager = Manager(app)
+# 将app和db关联
+Migrate(app, db)
+# 将迁移命令添加到manager中
+manager.add_command('db', MigrateCommand)
+
 
 @app.route('/')
 def index():
@@ -52,4 +60,4 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run()
+    manager.run()
