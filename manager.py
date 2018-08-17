@@ -16,18 +16,5 @@ Migrate(app, db)
 manager.add_command('db', MigrateCommand)
 
 
-@app.route('/')
-def index():
-    session["name"] = "itheima"
-
-    logging.debug('测试debug')
-    logging.warning('测试warning')
-    logging.error('测试error')
-    logging.fatal('测试fatal')
-
-    # current_app.logger.error("测试error")
-    return 'Hello Index222!'
-
-
 if __name__ == '__main__':
     manager.run()

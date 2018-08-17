@@ -9,8 +9,10 @@ from redis import StrictRedis
 
 from config import config
 
+
 db = SQLAlchemy()
 
+redis_store = None  # type: StrictRedis
 
 def setup_log(config_name):
     # 设置日志的记录等级
@@ -25,7 +27,6 @@ def setup_log(config_name):
     logging.getLogger().addHandler(file_log_handler)
 
 
-
 def create_app(config_name):
     # 配置日志
     setup_log(config_name)
@@ -36,10 +37,15 @@ def create_app(config_name):
     # 初始化数据库
     db.init_app(app)
     # 初始化redis存储对象
+    global redis_store
     redis_store = StrictRedis(host=config[config_name].REDIS_HOST, port=config["development"].REDIS_PORT)
     # 开启当前项目 CSRF 保护, 只做服务器验证功能
     CSRFProtect(app)
     # 设置session保存位置
     Session(app)
+
+    # 注册蓝图
+    from info.modules.index import index_blu
+    app.register_blueprint(index_blu)
 
     return app
