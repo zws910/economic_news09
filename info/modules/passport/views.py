@@ -14,7 +14,7 @@ from info.utils.response_code import RET
 from . import passport_blu
 
 
-@passport_blu.route('/sms_code')  # method = 'POST'
+@passport_blu.route('/sms_code', methods=['POST'])
 def send_sms_code():
     """
     发送短信验证码
@@ -26,6 +26,7 @@ def send_sms_code():
     6. 发送短信验证码
     7. 告知发送结果
     """
+
     return jsonify(errno=RET.OK, errmsg="发送成功")
 
     # 1.
