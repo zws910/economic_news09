@@ -14,7 +14,7 @@ from info.utils.response_code import RET
 from . import passport_blu
 
 
-@passport_blu.route('/sms_code', method=["POST"])
+@passport_blu.route('/sms_code')  # method = 'POST'
 def send_sms_code():
     """
     发送短信验证码
@@ -26,6 +26,8 @@ def send_sms_code():
     6. 发送短信验证码
     7. 告知发送结果
     """
+    return jsonify(errno=RET.OK, errmsg="发送成功")
+
     # 1.
     # '{"mobile": "18611111111"}, "image_code": "AAAA", "image_code_id": d1f32a132a1f3s1a'
     # json.loads(request.data)
@@ -74,7 +76,7 @@ def send_sms_code():
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg="数据保存失败")
 
-    return jsonify(errno=RET.OK, errmsg="数据查询失败")
+    return jsonify(errno=RET.OK, errmsg="发送成功")
 
 
 @passport_blu.route('/image_code')
