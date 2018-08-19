@@ -9,10 +9,10 @@ from redis import StrictRedis
 
 from config import config
 
-
 db = SQLAlchemy()
 
 redis_store = None  # type: StrictRedis
+
 
 def setup_log(config_name):
     # 设置日志的记录等级
@@ -45,7 +45,11 @@ def create_app(config_name):
     Session(app)
 
     # 注册蓝图
+    # 首页蓝图
     from info.modules.index import index_blu
     app.register_blueprint(index_blu)
+    # 注册图片验证码蓝图
+    from info.modules.passport import passport_blu
+    app.register_blueprint(passport_blu)
 
     return app
