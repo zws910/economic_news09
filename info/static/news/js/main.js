@@ -33,11 +33,13 @@ $(function () {
 
 
     // 点击输入框，提示文字上移
-    $('.form_group').on('click focusin', function () {
-        $(this).children('.input_tip').animate({
-            'top': -5,
-            'font-size': 12
-        }, 'fast').siblings('input').focus().parent().addClass('hotline');
+    $('.form_group').on('click',function(){
+        $(this).children('input').focus()
+    })
+
+    $('.form_group input').on('focusin',function(){
+        $(this).siblings('.input_tip').animate({'top':-5,'font-size':12},'fast')
+        $(this).parent().addClass('hotline');
     })
 
     // 输入框失去焦点，如果输入框为空，则提示文字下移
@@ -205,8 +207,7 @@ function sendSMSCode() {
                         // 代表倒计时结束
 
                         // 清除倒计时
-                        clearInterval(t)
-
+                        clearInterval(t);
                         // 设置显示内容
                         $(".get_code").html("点击获取验证码");
                         // 重新添加点击事件
@@ -220,7 +221,8 @@ function sendSMSCode() {
             }
             else {
                 // 代表发送失败
-                alert(response.errmsg)
+                alert(response.errmsg);
+                $(".get_code").attr("onclick", "sendSMSCode();");
             }
         }
 
