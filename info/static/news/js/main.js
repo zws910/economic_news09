@@ -124,6 +124,10 @@ $(function () {
             url: "/passport/login",
             type: "post",
             contentType: "application/json",
+            // 再header中添加csrf_token的随机值
+            headers: {
+                "X-CSRFToken": getCookie("csrf_token")
+            },
             data: JSON.stringify(params),
             success: function (resp) {
                 if (resp.errno == "0") {
