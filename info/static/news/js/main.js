@@ -33,12 +33,12 @@ $(function () {
 
 
     // 点击输入框，提示文字上移
-    $('.form_group').on('click',function(){
+    $('.form_group').on('click', function () {
         $(this).children('input').focus()
     })
 
-    $('.form_group input').on('focusin',function(){
-        $(this).siblings('.input_tip').animate({'top':-5,'font-size':12},'fast')
+    $('.form_group input').on('focusin', function () {
+        $(this).siblings('.input_tip').animate({'top': -5, 'font-size': 12}, 'fast')
         $(this).parent().addClass('hotline');
     })
 
