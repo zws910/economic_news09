@@ -114,6 +114,30 @@ $(function () {
         }
 
         // 发起登录请求
+
+        var params = {
+            "mobile": mobile,
+            "password": password,
+        };
+
+        $.ajax({
+            url: "/passport/login",
+            type: "post",
+            contentType: "application/json",
+            data: JSON.stringify(params),
+            success: function (resp) {
+                if (resp.errno == "0") {
+                    // 代表登录成功
+                    location.reload()
+                } else {
+                    // 登录失败
+                    alert(resp.errmsg);
+                    $('#register-password-err').html(resp.errmsg);
+                    $('#register-password-err').show()
+                }
+            }
+        })
+
     })
 
 
@@ -148,6 +172,36 @@ $(function () {
         }
 
         // 发起注册请求
+
+        // 准备参数
+        var params = {
+            "mobile": mobile,
+            "smscode": smscode,
+            "password": password
+        };
+
+
+        $.ajax({
+            url: "/passport/register",
+            type: "post",
+            contentType: "application/json",
+            headers: {
+                "X-CSRFToken": getCookie("csrf_token")
+            },
+            data: JSON.stringify(params),
+            success: function (resp) {
+                if (resp.errno == "0") {
+                    // 注册成功
+                    location.reload()
+                } else {
+                    // 注册失败
+                    alert(resp.errmsg)
+                    $('#register-password-err').html(resp.errmsg);
+                    $('#register-password-err').show()
+                }
+            }
+        })
+
 
     })
 });
