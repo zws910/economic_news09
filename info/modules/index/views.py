@@ -35,7 +35,6 @@ def index():
     for news in news_list:
         news_dict_li.append(news.to_basic_dict())
 
-
     data = {
         "user": user.to_dict() if user else None
     }
