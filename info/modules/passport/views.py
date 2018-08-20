@@ -171,17 +171,18 @@ def send_sms_code():
 
     # return jsonify(errno=RET.OK, errmsg="发送成功")
 
-    # 1.
+    # 1. 获取参数
     # '{"mobile": "18611111111"}, "image_code": "AAAA", "image_code_id": d1f32a132a1f3s1a'
-    # json.loads(request.data)
+    # params_dict = json.loads(request.data)
     params_dict = request.json
 
     mobile = params_dict.get("mobile")
     image_code = params_dict.get("image_code")
     image_code_id = params_dict.get("image_code_id")
 
-    # 2.
+    # 2. 校验参数
     if not all([mobile, image_code, image_code_id]):
+        # jsonify返回一个json字符串  {"errno": "RET.PARAMERR", "errmsg": "参数有误"}
         return jsonify(errno=RET.PARAMERR, errmsg="参数有误")
 
     if not re.match(r'1[35678]\d{9}', mobile):
@@ -189,7 +190,8 @@ def send_sms_code():
 
     # 3.
     try:
-        real_image_code = redis_store.get("ImageCodeId_" + image_code_id).decode('utf-8')
+        real_image_code = redis_store.get("ImageCodeId_" + image_code_id)
+        print(real_image_code)  # for test
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg="数据查询失败")
@@ -199,6 +201,7 @@ def send_sms_code():
 
     # 4.
     if real_image_code.upper() != image_code.upper():
+        print("---->real: %s     code: %s" % (real_image_code, image_code))  # for test
         return jsonify(errno=RET.DATAERR, errmsg="图片验证码输入错误")
 
     # 5.
@@ -244,7 +247,7 @@ def get_image_code():
 
     # 4. 保存图片验证码文字内容到redis
     try:
-        redis_store.set("ImageCodeId_" + image_code_id, text, constants.IMAGE_CODE_REDIS_EXPIRES)
+        redis_store.setex("ImageCodeId_" + image_code_id, constants.IMAGE_CODE_REDIS_EXPIRES, text)
     except Exception as e:
         current_app.logger.error(e)
         abort(500)

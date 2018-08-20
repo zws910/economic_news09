@@ -256,6 +256,9 @@ function sendSMSCode() {
         data: JSON.stringify(params),
         // 请求参数的数据类型
         contentType: "application/json",
+        headers: {
+                "X-CSRFToken": getCookie("csrf_token")
+            },
         success: function (response) {
             if (response.errno == "0") {
                 // 代表发送成功
