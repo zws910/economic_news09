@@ -40,31 +40,33 @@ def login():
     3. 校验密码是否正确
     4. 保存用户的登陆状态
     5. 响应OK
-
     :return:
     """
-
-    # 1
+    # 1 获取参数
     params_dict = request.json
     mobile = params_dict.get("mobile")
-    passport = params_dict.get("passport")
+    password = params_dict.get("password")
 
-    # 2
-    if not all([mobile, passport]):
+    # 2 校验参数
+    if not all([mobile, password]):
         return jsonify(errno=RET.PARAMERR, errmsg="参数错误")
 
     # 校验手机号是否正确
     if not re.match(r'1[35678]\d{9}', mobile):
         return jsonify(errno=RET.PARAMERR, errmsg="手机号格式不正确")
 
-    # 3
+    # 3 校验密码是否正确
     # 先查询当前是否有指定手机号的用户
     try:
         user = User.query.filter(User.mobile == mobile).first()
     except Exception as e:
         current_app.logger.error(e)
-
-    if not user.check_passowrd(passport):
+        return jsonify(errno=RET.DBERR, errmsg="数据查询错误")
+    # 判断用户是否存在
+    if not user:
+        return jsonify(errno=RET.NODATA, errmsg="用户不存在")
+    # 校验登陆的密码和当前用户的密码是否一致
+    if not user.check_passowrd(password):
         return jsonify(errno=RET.PWDERR, errmsg="用户名或密码错误")
 
     # 4. 保存用户的登陆状态
@@ -94,23 +96,20 @@ def register():
     3. 取到服务器保存的真实的短信验证码内容
     4. 校验用户输入的短信验证码内容和真实验证码内容是否一直
     5. 如果一致, 初始化USER模型
-    6. 讲user模型添加数据库
+    6. 将user模型添加数据库
     7. 返回响应
-
-
     :return:
     """
-
-    # 1
+    # 1. 获取参数
     param_dict = request.json
     mobile = param_dict.get("mobile")
     smscode = param_dict.get("smscode")
     password = param_dict.get("password")
 
-    # 2.
+    # 2. 校验参数
     if not all([mobile, smscode, password]):
         return
-
+    # 校验手机号是否正确
     if not re.match(r'1[35678]\d{9}', mobile):
         return jsonify(errno=RET.PARAMERR, errmsg="手机号格式不正确")
 
@@ -129,7 +128,7 @@ def register():
     if real_sms_code != smscode:
         return jsonify(errno=RET.DATAERR, errmsg="验证码输入错误")
 
-    # 5 如果一直, 初始化User模型, 并且赋值属性
+    # 5 如果一致, 初始化User模型, 并且赋值属性
     user = User()
     user.mobile = mobile
     # 暂时没有昵称, 使用手机号代替
@@ -210,10 +209,10 @@ def send_sms_code():
     current_app.logger.debug("短信验证码内容是: %s" % sms_code_str)
 
     # 6. 发送短信验证码
-    result = CCP().send_template_sms(mobile, [sms_code_str, constants.SMS_CODE_REDIS_EXPIRES], "1")
-    if result != 0:
-        # 代表发送不成功
-        return jsonify(errno=RET.THIRDERR, errmsg="发送短信失败")
+    # result = CCP().send_template_sms(mobile, [sms_code_str, constants.SMS_CODE_REDIS_EXPIRES], "1")
+    # if result != 0:
+    #     # 代表发送不成功
+    #     return jsonify(errno=RET.THIRDERR, errmsg="发送短信失败")
 
     # 保存验证码内容到redis
     try:

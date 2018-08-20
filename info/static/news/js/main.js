@@ -147,7 +147,7 @@ $(function () {
 
     // TODO 注册按钮点击
     $(".register_form_con").submit(function (e) {
-        // 阻止默认提交操作
+        // 阻止默认表单提交操作
         e.preventDefault()
 
         // 取到用户输入的内容
@@ -184,7 +184,6 @@ $(function () {
             "password": password
         };
 
-
         $.ajax({
             url: "/passport/register",
             type: "post",
@@ -205,8 +204,6 @@ $(function () {
                 }
             }
         })
-
-
     })
 });
 
