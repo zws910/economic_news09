@@ -40,7 +40,9 @@ def create_app(config_name):
     global redis_store
     redis_store = StrictRedis(host=config[config_name].REDIS_HOST, port=config["development"].REDIS_PORT)
     # 开启当前项目 CSRF 保护, 只做服务器验证功能
-    # CSRFProtect(app)
+    # 帮我们做了: 从cookie中取出随机值, 从表单中取出随机值, 然后进行校验, 并且响应校验结果
+    # 我们需要做: 1. 再界面加载的时候, 往cookie中添加一个csrf_token, 并且再表单中添加一个隐藏的csrf_token
+    CSRFProtect(app)
     # 设置session保存位置
     Session(app)
 

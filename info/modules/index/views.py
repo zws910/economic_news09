@@ -22,11 +22,9 @@ def index():
         except Exception as e:
             current_app.logger.error(e)
 
-
     data = {
         "user": user.to_dict() if user else None
     }
-
 
     return render_template('news/index.html', data=data)
 

@@ -17,6 +17,20 @@ from info.utils.response_code import RET
 from . import passport_blu
 
 
+@passport_blu.route('/logout')
+def logout():
+    """
+    退出登录
+    :return:
+    """
+
+    session.pop('user_id', None)
+    session.pop('mobile', None)
+    session.pop('nick_name', None)
+
+    return jsonify(errno=RET.OK, errmsg="退出成功")
+
+
 @passport_blu.route('/login', methods=["POST"])
 def login():
     """
@@ -58,6 +72,15 @@ def login():
     session["mobile"] = user.mobile
     session["nick_name"] = user.nick_name
 
+    # 设置当前用户最后一次登录的时间
+    user.last_login = datetime.now()
+
+    # try:
+    #     db.session.commit()
+    # except Exception as e:
+    #     db.session.rollback()
+    #     current_app.logger.error(e)
+
     # 5.
     return jsonify(errno=RET.OK, errmsg="登录成功")
 
@@ -94,6 +117,7 @@ def register():
     # 3
     try:
         real_sms_code = redis_store.get("SMS_" + mobile)
+        print(real_sms_code)  # for test
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.PARAMERR, errmsg="数据查询失败")
@@ -175,7 +199,6 @@ def send_sms_code():
 
     # 4.
     if real_image_code.upper() != image_code.upper():
-        print(real_image_code, image_code)  # for test
         return jsonify(errno=RET.DATAERR, errmsg="图片验证码输入错误")
 
     # 5.
@@ -184,7 +207,7 @@ def send_sms_code():
     current_app.logger.debug("短信验证码内容是: %s" % sms_code_str)
 
     # 6. 发送短信验证码
-    result = CCP().send_template_sms(mobile, [sms_code_str, constants.SMS_CODE_REDIS_EXPIRES])
+    result = CCP().send_template_sms(mobile, [sms_code_str, constants.SMS_CODE_REDIS_EXPIRES], "1")
     if result != 0:
         # 代表发送不成功
         return jsonify(errno=RET.THIRDERR, errmsg="发送短信失败")
