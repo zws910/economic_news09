@@ -10,10 +10,13 @@ $(function () {
 
     // 首页分类切换
     $('.menu li').click(function () {
+        // 取到指定分类的cid
         var clickCid = $(this).attr('data-cid')
+        // 遍历所有的li移除身上的选中效果
         $('.menu li').each(function () {
             $(this).removeClass('active')
         })
+        // 给当前分类添加选中的状态
         $(this).addClass('active')
 
         if (clickCid != currentCid) {
@@ -75,7 +78,6 @@ function updateNewsData() {
             if (cur_page == 1) {
                 $(".list_con").html("")
             }
-
 
             // 添加请求成功之后返回的数据
 
