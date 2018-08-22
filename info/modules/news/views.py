@@ -1,3 +1,4 @@
+from flask import abort
 from flask import current_app
 from flask import g
 from flask import render_template
@@ -36,9 +37,25 @@ def news_detail(news_id):
     for news in news_list:
         news_dict_li.append(news.to_basic_dict())
 
+    # 查询新闻数据
+    news = None
+
+    try:
+        news = News.query.get(news_id)
+    except Exception as e:
+        current_app.logger.error(e)
+
+    if not news:
+        # 404页面后续统一处理
+        abort(404)
+
+    # 更新新闻的点击次数
+    news.clicks += 1
+
     data = {
         "user": user.to_dict() if user else None,
-        'news_dict_li': news_dict_li
+        'news_dict_li': news_dict_li,
+        "news": news.to_dict()
     }
 
     return render_template("/news/detail.html", data=data)
