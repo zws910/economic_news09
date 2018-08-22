@@ -68,5 +68,8 @@ def create_app(config_name):
     # 注册图片验证码蓝图
     from info.modules.passport import passport_blu
     app.register_blueprint(passport_blu)
+    # 新闻详情页蓝图
+    from info.modules.news import news_blu
+    app.register_blueprint(news_blu)
 
     return app
