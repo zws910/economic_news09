@@ -7,7 +7,6 @@ from info import constants
 from info.models import News
 from info.modules.news import news_blu
 
-
 # 127.0.0.1:5000/news/2
 from info.utils.common import user_login_data
 
@@ -55,7 +54,12 @@ def news_detail(news_id):
     is_collected = False
 
     # 如果用户已登录
-
+    # user=g.user, 所以如果g变量中有user就代表用户已登录
+    if user:
+        # 判断用户是否收藏新闻
+        # user.collection_news 后面可以不用加all, 因为sqlalchemy会在使用的时候去自动加载
+        if news in user.collection_news:
+            is_collected = True
 
     data = {
         "user": user.to_dict() if user else None,
