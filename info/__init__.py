@@ -72,5 +72,8 @@ def create_app(config_name):
     # 新闻详情页蓝图
     from info.modules.news import news_blu
     app.register_blueprint(news_blu)
+    # 个人档案页蓝图
+    from info.modules.profile import profile_blu
+    app.register_blueprint(profile_blu)
 
     return app
