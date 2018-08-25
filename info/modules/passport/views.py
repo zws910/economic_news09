@@ -28,6 +28,7 @@ def logout():
     session.pop('user_id', None)
     session.pop('mobile', None)
     session.pop('nick_name', None)
+    session.pop('is_admin', None)
 
     return jsonify(errno=RET.OK, errmsg="退出成功")
 
@@ -136,7 +137,7 @@ def register():
     user.nick_name = mobile
     # 记录用户最后一次登陆时间
     user.last_login = datetime.now()
-    # TODO 对密码做处理
+    # 对密码做处理
     user.password = password
     # 6 添加到数据库
     try:
