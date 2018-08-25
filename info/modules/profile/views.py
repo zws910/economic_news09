@@ -13,6 +13,37 @@ from info.utils.image_storage import storage
 from info.utils.response_code import RET
 
 
+@profile_blu.route('/news_list')
+@user_login_data
+def user_news_list():
+    user = g.user
+
+    page = request.args.get("p", 1)
+
+    news_list = []
+    current_page = 1
+    total_page = 1
+    try:
+        paginate = News.query.filter(News.user_id == user.id).paginate(page, constants.USER_COLLECTION_MAX_NEWS, False)
+        news_list = paginate.items
+        current_page = paginate.page
+        total_page = paginate.pages
+    except Exception as e:
+        current_app.logger.error(e)
+
+    news_dict_li = []
+    for news in news_list:
+        news_dict_li.append(news.to_review_dict())
+
+    data = {
+        "news_list": news_dict_li,
+        "total_page": total_page,
+        "current_page": current_page
+    }
+
+    return render_template('news/user_news_list.html', data=data)
+
+
 @profile_blu.route('/news_release', methods=["GET", "POST"])
 @user_login_data
 def news_release():
@@ -93,7 +124,6 @@ def news_release():
 def user_collection():
     # 获取参数
     page = request.args.get("p", 1)
-
     # 判断参数
     try:
         page = int(page)
@@ -104,6 +134,9 @@ def user_collection():
     # 查询用户指定页数的收藏的新闻
 
     user = g.user
+    news_list = []
+    current_page = 1
+    total_page = 1
     try:
         paginate = user.collection_news.paginate(page, constants.USER_COLLECTION_MAX_NEWS, False)
         current_page = paginate.page
