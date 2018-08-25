@@ -18,20 +18,27 @@ from info.utils.common import user_login_data
 @admin_blu.route('/news_review')
 def news_review():
     """新闻审核"""
-
     page = request.args.get("p", 1)
+    keywords = request.args.get("keywords", None)
     try:
         page = int(page)
     except Exception as e:
         current_app.logger.error(e)
-        page =1
+        page = 1
 
     news_list = []
     current_page = 1
     total_page = 1
 
+    filters = [News.status != 0]
+    # 如果关键字存在,那么就添加关键字搜索
+    if keywords:
+        filters.append(News.title.contains(keywords))
+
     try:
-        paginate = News.query.filter(News.status!=0).order_by(News.create_time.desc()).paginate(page, constants.ADMIN_NEWS_PAGE_MAX_COUNT, False)
+        paginate = News.query.filter(*filters).order_by(News.create_time.desc()).paginate(page,
+                                                                                          constants.ADMIN_NEWS_PAGE_MAX_COUNT,
+                                                                                          False)
         news_list = paginate.items
         current_page = paginate.page
         total_page = paginate.pages
@@ -48,7 +55,6 @@ def news_review():
         "news_list": news_dict_list
     }
     return render_template('/admin/news_review.html', data=data)
-
 
 
 @admin_blu.route('/user_list')
