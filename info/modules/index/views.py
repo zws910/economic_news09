@@ -33,7 +33,7 @@ def news_list():
         current_app.logger.error(e)
         return jsonify(errno=RET.PARAMERR, errmsg="参数")
 
-    filters = [News.status == 0]
+    filters = [News.status == 0]  # 审核通过才显示
     if cid != 1:  # 查询的不是最新的数据
         # 需要添加条件
         filters.append(News.category_id == cid)
