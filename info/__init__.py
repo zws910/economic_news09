@@ -87,5 +87,7 @@ def create_app(config_name):
     # 个人档案页蓝图
     from info.modules.profile import profile_blu
     app.register_blueprint(profile_blu)
-
+    # 管理员登录页蓝图
+    from info.modules.admin import admin_blu
+    app.register_blueprint(admin_blu)
     return app
