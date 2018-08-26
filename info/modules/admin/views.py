@@ -18,9 +18,64 @@ from info.utils.image_storage import storage
 from info.utils.response_code import RET
 
 
+@admin_blu.route('/news_type', methods=["GET", "POST"])
+def news_type():
+    """新闻分类"""
+    if request.method == "GET":
+
+        try:
+            categories = Category.query.all()
+        except Exception as e:
+            current_app.logger.error(e)
+            return render_template('admin/news_type.html', errmsg="查询数据错误")
+
+        category_dict_li = []
+
+        for category in categories:
+            # 取到分类的字典
+            cate_dict = category.to_dict()
+            category_dict_li.append(cate_dict)
+
+        category_dict_li.pop(0)  # 移除'最新'分类
+
+        data = {
+            "categories": category_dict_li
+        }
+
+        return render_template('admin/news_type.html', data=data)
+
+    # 增加分类
+    # 1. 取参数
+    category_name = request.json.get("name")
+    category_id = request.json.get("id")
+
+    if not category_name:
+        return jsonify(errno=RET.PARAMERR, errmsg="参数错误")
+
+    category = None
+    if category_id:
+        # 有分类ID代表查询相关数据
+        try:
+            category_id = int(category_id)
+            category = Category.query.get(category_id)
+        except Exception as e:
+            current_app.logger.error(e)
+            return jsonify(errno=RET.PARAMERR, errmsg="参数错误")
+
+        if not category:
+            return jsonify(errno=RET.NODATA, errmsg="未查询到数据")
+
+        category.name = category_name
+    else:
+        category = Category()
+        category.name = category_name
+        db.session.add(category)
+
+    return jsonify(errno=RET.OK, errmsg="OK")
+
+
 @admin_blu.route('/news_edit_detail', methods=["GET", "POST"])
 def news_edit_detail():
-
     if request.method == "GET":
         # 查询点击的新闻的相关数据并传入到模板中
         news_id = request.args.get("news_id")
