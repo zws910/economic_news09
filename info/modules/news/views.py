@@ -42,12 +42,16 @@ def followed_user():
         return jsonify(errno=RET.NODATA, errmsg="未查询到数据")
 
     if action == "follow":
-        if other not in user.followed:
-            # 当前用户的关注列表添加一个值  2选1
-            user.followed.append(other)
-            # other.followers.append(user)
+        if user.id != other.id:
+            print(user.id, other.id)
+            if other not in user.followed:
+                # 当前用户的关注列表添加一个值  2选1
+                user.followed.append(other)
+                # other.followers.append(user)
+            else:
+                return jsonify(errno=RET.DATAEXIST, errmsg="当前用户已被关注")
         else:
-            return jsonify(errno=RET.DATAEXIST, errmsg="当前用户已被关注")
+            return jsonify(errno=RET.USERERR, errmsg="不能关注自己")
     else:
         # 取消关注
         if other in user.followed:
