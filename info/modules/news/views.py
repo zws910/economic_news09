@@ -13,7 +13,7 @@ from info.utils.common import user_login_data
 from info.utils.response_code import RET
 
 
-@news_blu.route('/followed_user')
+@news_blu.route('/followed_user', methods=["GET", "POST"])
 @user_login_data
 def followed_user():
     """关注/取消关注"""
