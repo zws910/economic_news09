@@ -46,14 +46,14 @@
         <div class="form_group">
             <label>新闻内容：</label>
             <div class="rich_wrap fl">
-                <input class="input_area" id="rich_content" name="content" value="{{ data.news.content }}"></input>
+                <input class="input_area" id="rich_content" name="content" value="{{ data.news.content }}">
             </div>
         </div>
         <div class="form_group indent_group line_top">
             <input type="submit" value="确定" class="confirm">
             <input type="button" value="取消" class="cancel" onclick="cancel()">
-            <input type="hidden" name="news_id" value="{{ data.news.id }}">
         </div>
+        <input type="hidden" name="news_id" value="{{ data.news.id }}">
     </form>
 </div>
 
