@@ -13,6 +13,51 @@ from info.utils.image_storage import storage
 from info.utils.response_code import RET
 
 
+
+@profile_blu.route('/user_follow')
+@user_login_data
+def user_follow():
+    # 获取参数
+    page = request.args.get("p", 1)
+    # 判断参数
+    try:
+        page = int(page)
+    except Exception as e:
+        current_app.logger.error(e)
+        page = 1
+
+    # 查询用户指定页数的收藏的新闻
+
+    user = g.user
+    followers = []
+    current_page = 1
+    total_page = 1
+    try:
+        paginate = user.followed.paginate(page, constants.USER_FOLLOWED_MAX_COUNT, False)
+        current_page = paginate.page
+        total_page = paginate.pages
+        followers = paginate.items
+    except Exception as e:
+        current_app.logger.error(e)
+
+    users_dict_li = []
+    for follower in followers:
+        users_dict_li.append(follower.to_dict())
+
+    data = {
+        "total_page": total_page,
+        "current_page": current_page,
+        "users": users_dict_li
+    }
+
+    return render_template('news/user_follow.html', data=data)
+
+
+
+
+
+
+
 @profile_blu.route('/news_list')
 @user_login_data
 def user_news_list():
@@ -191,7 +236,7 @@ def pic_info():
     if request.method == "GET":
         return render_template("news/user_pic_info.html", data={"user": g.user.to_dict()})
 
-    # TODO 如果是POST表示修改头像
+    # 如果是POST表示修改头像
     # 1. 取到上传的图片
     try:
         avatar = request.files.get("avatar").read()
