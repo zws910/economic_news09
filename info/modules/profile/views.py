@@ -14,10 +14,54 @@ from info.utils.image_storage import storage
 from info.utils.response_code import RET
 
 
+@profile_blu.route('/other_news_list')
+def other_news_list():
+    """返回指定用户发布的新闻"""
+
+    other_id = request.args.get("user_id")
+    page = request.args.get("p", 1)
+
+    try:
+        page = int(page)
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.PARAMERR, errmsg="参数错误")
+
+    try:
+        other = User.query.get(other_id)
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR, errmsg="数据查询失败")
+
+    if not other:
+        return jsonify(errno=RET.NODATA, errmsg="当前用户不存在")
+
+    try:
+        paginate = other.news_list.paginate(page, constants.OTHER_NEWS_PAGE_MAX_COUNT, False)
+        news_li = paginate.items
+        current_page = paginate.page
+        total_page = paginate.pages
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR, errmsg="数据查询失败")
+
+    news_dict_li = []
+
+    for news_item in news_li:
+        news_dict_li.append(news_item.to_basic_dict())
+
+    data = {
+        "news_list": news_dict_li,
+        "total_page": total_page,
+        "current_page": current_page
+    }
+
+    return jsonify(errno=RET.OK, errmsg="OK", data=data)
+
+
 @profile_blu.route('/other_info')
 @user_login_data
 def other_info():
-
     user = g.user
     # 去查询其他人的用户信息
     other_id = request.args.get("user_id")
@@ -39,7 +83,6 @@ def other_info():
     if other and user:
         if other in user.followed:
             is_followed = True
-
 
     data = {
         "user": g.user.to_dict() if g.user else None,
