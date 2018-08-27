@@ -1,3 +1,4 @@
+from flask import abort
 from flask import current_app
 from flask import g, jsonify
 from flask import redirect
@@ -6,7 +7,7 @@ from flask import request
 
 from info import constants, db
 from info.constants import QINIU_DOMIN_PREFIX
-from info.models import Category, News
+from info.models import Category, News, User
 from info.modules.profile import profile_blu
 from info.utils.common import user_login_data
 from info.utils.image_storage import storage
@@ -16,7 +17,35 @@ from info.utils.response_code import RET
 @profile_blu.route('/other_info')
 @user_login_data
 def other_info():
-    data = {"user": g.user.to_dict() if g.user else None}
+
+    user = g.user
+    # 去查询其他人的用户信息
+    other_id = request.args.get("user_id")
+
+    if not other_id:
+        abort(404)
+
+    # 查询指定id的用户信息
+    try:
+        other = User.query.get(other_id)
+    except Exception as e:
+        current_app.logger.error(e)
+
+    if not other:
+        abort(404)
+
+    is_followed = False
+    # 如果当前新闻有作者, 并且当前登录用户已关注过这个用户
+    if other and user:
+        if other in user.followed:
+            is_followed = True
+
+
+    data = {
+        "user": g.user.to_dict() if g.user else None,
+        "other_info": other.to_dict(),
+        "is_followed": is_followed
+    }
     return render_template('news/other.html', data=data)
 
 

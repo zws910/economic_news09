@@ -76,6 +76,7 @@ def news_type():
 
 @admin_blu.route('/news_edit_detail', methods=["GET", "POST"])
 def news_edit_detail():
+    """编辑新闻详情"""
     if request.method == "GET":
         # 查询点击的新闻的相关数据并传入到模板中
         news_id = request.args.get("news_id")
